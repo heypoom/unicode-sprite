@@ -107,15 +107,16 @@
             const [file] = files
             if (!file) return
 
-            window.file = file
-
             const buffer = await file.arrayBuffer()
-            const list = new Uint8Array(buffer.slice(0, sizeLimits))
 
-            const bits = Array.from(list)
+            const hex = Array.from(new Uint8Array(buffer.slice(0, sizeLimits)))
+            window.hex = hex
+
+            const bits = hex
               .map((n) => n.toString(2).padStart(7, 0))
               .flatMap((str) => str.split('').map(Number))
 
+            window.bits = bits
             this.bits = bits
           },
 
