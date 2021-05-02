@@ -121,10 +121,7 @@
             @param {number} bitAt
           */
           toggleBit(bitAt) {
-            const bits = [...this.bits]
-            bits[bitAt] = Number(!bits[bitAt])
-
-            this.bits = bits
+            Vue.set(this.bits, bitAt, Number(!this.bits[bitAt]))
           },
         },
       })
