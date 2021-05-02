@@ -167,9 +167,10 @@
           this.loadBits()
 
           window.addEventListener('keydown', (e) => {
-            if (e.key === '0') return this.bits.push(0)
-            if (e.key === '1') return this.bits.push(1)
-            if (e.key === 'Backspace') return this.bits.pop()
+            if (e.key === '0') this.bits.push(0)
+            else if (e.key === '1') this.bits.push(1)
+            else if (e.key === 'Backspace') this.bits.pop()
+            else this.appendChar(e.key)
 
             this.saveBits()
           })
@@ -238,6 +239,15 @@
             if (!savedBits) return
 
             this.bits = savedBits.split('').map(Number)
+          },
+
+          appendChar(char) {
+            if (char.length !== 1) return
+
+            const bits = char.charCodeAt(0).toString(2).padStart(8, 0).split('').map(Number)
+            console.log(`Append: ${char} = ${bits.join('')}`)
+
+            this.bits.push(...bits)
           }
         },
       })
