@@ -25,6 +25,12 @@
           {{Number(bit)}}
         </div>
       </div>
+
+      <div class="export-panel">
+        <button @click="exportFile">Export File</button>
+
+        <div class="download-url" v-if="url">URL = <a :href="url">Download File</a></divc>
+      </div>
     </main>
 
     <style scoped>
@@ -39,6 +45,7 @@
         min-height: 100vh;
 
         display: flex;
+        flex-direction: column;
         align-items: center;
         justify-content: center;
 
@@ -82,6 +89,14 @@
         font-size: 13px;
         color: rgba(255, 255, 255, 0.7);
       }
+
+      .export-panel {
+        margin-top: 50px;
+      }
+
+      .export-panel .download-url {
+        margin-top: 10px;
+      }
     </style>
 
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
@@ -89,10 +104,24 @@
     <script>
       const sizeLimits = 4000
 
+      function chunkList(list, length) {
+        const chunks = []
+        let i = 0
+
+        while (i < list.length) {
+          chunks.push(list.slice(i, (i += length)))
+        }
+
+        return chunks
+      }
+
+      window.chunkList = chunkList
+
       const app = new Vue({
         el: 'main',
         data: {
           bits: Array.from({length: 120}, () => Number(Math.random() < 0.2)),
+          url: '',
         },
         computed: {},
         methods: {
@@ -109,7 +138,7 @@
             window.hex = hex
 
             const bits = hex
-              .map((n) => n.toString(2).padStart(7, 0))
+              .map((n) => n.toString(2).padStart(8, 0))
               .flatMap((str) => str.split('').map(Number))
 
             window.bits = bits
@@ -122,6 +151,19 @@
           */
           toggleBit(bitAt) {
             Vue.set(this.bits, bitAt, Number(!this.bits[bitAt]))
+          },
+
+          exportFile() {
+            URL.revokeObjectURL(this.url)
+
+            const chunks = chunkList(this.bits, 8).map((chunk) =>
+              parseInt(chunk.join(''), 2)
+            )
+
+            const blob = new Blob([new Uint8Array(chunks)])
+            const url = window.URL.createObjectURL(blob)
+
+            this.url = url
           },
         },
       })
