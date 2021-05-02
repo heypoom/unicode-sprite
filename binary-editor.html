@@ -14,13 +14,8 @@
     />
   </head>
   <body>
-    <main>
-      <div
-        class="container"
-        @drop.prevent="handleFileDrop"
-        @dragover.prevent
-        v-cloak
-      >
+    <main @drop.prevent="handleFileDrop" @dragover.prevent v-cloak>
+      <div class="container">
         <div
           v-for="(bit, at) in bits"
           class="sprite"
