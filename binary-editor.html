@@ -26,14 +26,16 @@
         </div>
       </div>
 
-      <div class="strings-panel">
-        {{strings}}
-      </div>
+      <div class="panel-container">
+        <div class="strings-panel">
+          {{strings}}
+        </div>
 
-      <div class="export-panel">
-        <button class="btn-export-file" @click="exportFile">Export File</button>
+        <div class="export-panel">
+          <button class="btn-export-file" @click="exportFile">Export File</button>
 
-        <div class="download-url" v-if="url">URL = <a :href="url">Download File</a></divc>
+          <div class="download-url" v-if="url">URL = <a :href="url">Download File</a></divc>
+        </div>
       </div>
     </main>
 
@@ -94,16 +96,30 @@
         color: rgba(255, 255, 255, 0.7);
       }
 
-      .strings-panel, .export-panel {
-        margin-top: 50px;
+      .panel-container {
+        display: flex;
+        flex-direction: column;
+
+        border: 2px solid white;
+
+        position: fixed;
+        bottom: 35px;
+        height: 100px;
+        background: rgba(0, 0, 0, 0.7);
+        overflow: scroll;
+        padding: 15px 20px;
+        padding-top: 0;
+        backdrop-filter: blur(5px);
+        width: 400px;
       }
 
       .strings-panel {
-        font-size: 19px;
+        font-size: 12px;
+        white-space: pre;
       }
 
       .export-panel .download-url {
-        margin-top: 10px;
+        margin-top: 5px;
       }
 
       .btn-export-file {
@@ -112,6 +128,7 @@
         font-family: "JetBrains Mono", sans-serif;
         border: 1px solid white;
         padding: 5px 10px;
+        margin-bottom: 10px;
       }
 
       .btn-export-file:hover {
@@ -145,10 +162,14 @@
           url: '',
         },
         mounted() {
+          this.loadBits()
+
           window.addEventListener('keydown', (e) => {
             if (e.key === '0') return this.bits.push(0)
             if (e.key === '1') return this.bits.push(1)
             if (e.key === 'Backspace') return this.bits.pop()
+
+            this.saveBits()
           })
         },
         computed: {
@@ -159,7 +180,7 @@
           },
 
           strings() {
-            return this.chunks.map(n => String.fromCharCode(n)).join('')
+            return this.chunks.map(n => String.fromCharCode(n)).join('').trim()
           }
         },
         methods: {
@@ -181,6 +202,8 @@
 
             window.bits = bits
             this.bits = bits
+
+            this.saveBits()
           },
 
           /**
@@ -189,6 +212,8 @@
           */
           toggleBit(bitAt) {
             Vue.set(this.bits, bitAt, Number(!this.bits[bitAt]))
+
+            this.saveBits()
           },
 
           exportFile() {
@@ -198,6 +223,17 @@
             const url = window.URL.createObjectURL(blob)
 
             this.url = url
+          },
+
+          saveBits() {
+            localStorage.setItem('bits', this.bits.join(''))
+          },
+
+          loadBits() {
+            const savedBits = localStorage.getItem('bits')
+            if (!savedBits) return
+
+            this.bits = savedBits.split('').map(Number)
           }
         },
       })
