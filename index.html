@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Unicode Sprite</title>
+  </head>
+  <body>
+    <main>
+      <input class="character" v-model="message" maxlength="3" />
+
+      <div class="container">
+        <div
+          v-for="(bit, at) in bits"
+          class="sprite"
+          :class="{on: bit, off: !bit}"
+          @click="toggleBit(at)"
+        >
+          {{Number(bit)}}
+        </div>
+      </div>
+
+      <div class="bits-text">{{bitstring}} = {{parseInt(bitstring, 2)}}</div>
+    </main>
+
+    <style scoped>
+      body {
+        margin: 0;
+      }
+
+      main {
+        color: white;
+        background: black;
+        min-height: 100vh;
+
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+
+      input.character {
+        max-width: 100px;
+        color: white;
+        margin-bottom: 40px;
+        font-size: 60px;
+        background: transparent;
+        border: none;
+        text-align: center;
+        border-bottom: 2px solid white;
+        outline: none;
+      }
+
+      .container {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+        grid-template-rows: 1fr 1fr 1fr 1fr;
+      }
+
+      .sprite {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        font-family: 'JetBrains Mono', sans-serif;
+        font-weight: 500;
+        font-size: 60px;
+        width: 130px;
+        height: 130px;
+
+        cursor: pointer;
+        user-select: none;
+      }
+
+      .sprite.off {
+        color: white;
+        background: black;
+      }
+
+      .sprite.on {
+        color: black;
+        background: white;
+      }
+
+      .bits-text {
+        font-size: 14px;
+        margin-top: 20px;
+        font-family: 'JetBrains Mono', sans-serif;
+      }
+    </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+    <script>
+      const app = new Vue({
+        el: 'main',
+        data: {
+          message: '🦄',
+        },
+        computed: {
+          bits() {
+            return this.message
+              .charCodeAt(0)
+              .toString(2)
+              .padStart(16, '0')
+              .split('')
+              .map((n) => Number(n) || 0)
+          },
+
+          bitstring() {
+            return this.bits.join('')
+          },
+        },
+        methods: {
+          /** @param {number} bit */
+          toggleBit(bit) {
+            const bits = [...this.bits]
+            bits[bit] = Number(!bits[bit])
+
+            this.message = String.fromCharCode(parseInt(bits.join(''), 2))
+          },
+        },
+      })
+    </script>
+  </body>
+</html>
