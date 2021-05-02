@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Unicode Sprite</title>
+
+    <link rel="preconnect" href="https://fonts.gstatic.com" />
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:500&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <main>
+      <input class="words" v-model="message" maxlength="100" />
+
+      <div class="group-container">
+        <div class="group" v-for="([char, bits], groupIndex) in bitgroups">
+          <div class="container">
+            <div
+              v-for="(bit, at) in bits"
+              class="sprite"
+              :class="{on: bit, off: !bit}"
+              @click="toggleBit(groupIndex, at)"
+            >
+              {{Number(bit)}}
+            </div>
+          </div>
+
+          <div class="bits-text">
+            {{char}} = {{bits.join('')}} = {{parseInt(bits.join(''), 2)}}
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <style scoped>
+      body {
+        margin: 0;
+      }
+
+      main {
+        color: white;
+        background: black;
+        min-height: 100vh;
+
+        padding: 40px 0;
+
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .group-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        grid-gap: 50px;
+
+        padding: 0px 50px;
+
+        align-items: center;
+        justify-content: center;
+      }
+
+      .group {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+
+      input.words {
+        max-width: 600px;
+        color: white;
+        margin-bottom: 40px;
+        font-size: 60px;
+        background: transparent;
+        border: none;
+        text-align: center;
+        border-bottom: 2px solid white;
+        outline: none;
+      }
+
+      .container {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+        grid-template-rows: 1fr 1fr 1fr 1fr;
+      }
+
+      .sprite {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        font-family: 'JetBrains Mono', sans-serif;
+        font-weight: 500;
+        font-size: 20px;
+        width: 80px;
+        height: 80px;
+
+        cursor: pointer;
+        user-select: none;
+      }
+
+      .sprite.off {
+        color: white;
+        background: black;
+      }
+
+      .sprite.on {
+        color: black;
+        background: white;
+      }
+
+      .bits-text {
+        font-size: 14px;
+        margin-top: 20px;
+        font-family: 'JetBrains Mono', sans-serif;
+      }
+    </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+    <script>
+      const app = new Vue({
+        el: 'main',
+        data: {
+          message: 'a',
+        },
+        computed: {
+          bitgroups() {
+            return this.message.split('').map((char) => {
+              const bits = char
+                .charCodeAt(0)
+                .toString(2)
+                .padStart(16, '0')
+                .split('')
+                .map((n) => Number(n) || 0)
+
+              return [char, bits]
+            })
+          },
+        },
+        methods: {
+          /**
+            @param {number} groupIndex
+            @param {number} bitAt
+          */
+          toggleBit(groupIndex, bitAt) {
+            const bitgroups = this.bitgroups.map((g) => g[1])
+
+            const group = bitgroups[groupIndex]
+            group[bitAt] = Number(!group[bitAt])
+
+            bitgroups[groupIndex] = group
+
+            this.message = bitgroups
+              .map((bits) => String.fromCharCode(parseInt(bits.join(''), 2)))
+              .join('')
+          },
+        },
+      })
+    </script>
+  </body>
+</html>
