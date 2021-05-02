@@ -298,7 +298,9 @@
           },
 
           scrollDown() {
-            window.scrollTo(0, Number.MAX_SAFE_INTEGER)
+            setTimeout(() => {
+              window.scrollTo(0, Number.MAX_SAFE_INTEGER)
+            }, 50)
           }
         },
       })
