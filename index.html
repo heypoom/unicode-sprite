@@ -29,11 +29,14 @@
       </div>
 
       <div class="bits-text">{{bitstring}} = {{parseInt(bitstring, 2)}}</div>
+
+      <a class="mode-switch" href="/words.html">Multiple Characters Mode</a>
     </main>
 
     <style scoped>
       body {
         margin: 0;
+        font-family: 'JetBrains Mono', sans-serif;
       }
 
       main {
@@ -70,7 +73,6 @@
         align-items: center;
         justify-content: center;
 
-        font-family: 'JetBrains Mono', sans-serif;
         font-weight: 500;
         font-size: 60px;
         width: 130px;
@@ -93,7 +95,12 @@
       .bits-text {
         font-size: 14px;
         margin-top: 20px;
-        font-family: 'JetBrains Mono', sans-serif;
+      }
+
+      .mode-switch {
+        margin-top: 15px;
+        font-size: 13px;
+        color: rgba(255, 255, 255, 0.7);
       }
     </style>
 
