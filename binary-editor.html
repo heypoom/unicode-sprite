@@ -14,28 +14,30 @@
     />
   </head>
   <body>
-    <main @drop.prevent="handleFileDrop" @dragover.prevent v-cloak>
-      <div class="container">
-        <div
-          v-for="(bit, at) in bits"
-          class="sprite"
-          :class="{on: bit, off: !bit}"
-          @click="toggleBit(at)"
-        >
-          {{Number(bit)}}
+    <div class="app">
+      <main @drop.prevent="handleFileDrop" @dragover.prevent v-cloak>
+        <div class="container">
+          <div
+            v-for="(bit, at) in bits"
+            class="sprite"
+            :class="{on: bit, off: !bit}"
+            @click="toggleBit(at)"
+          >
+            {{Number(bit)}}
+          </div>
         </div>
-      </div>
 
-      <div class="panel-container">
-        <div class="strings-panel">{{strings}}</div>
+        <div class="panel-container">
+          <div class="strings-panel">{{strings}}</div>
 
-        <div class="export-panel">
-          <button class="btn-export-file" @click="exportFile">Export File</button>
+          <div class="export-panel">
+            <button class="btn-export-file" @click="exportFile">Export File</button>
 
-          <div class="download-url" v-if="url">URL = <a :href="url">Download File</a></divc>
+            <div class="download-url" v-if="url">URL = <a :href="url">Download File</a></divc>
+          </div>
         </div>
-      </div>
-    </main>
+      </main>
+    </div>
 
     <style scoped>
       body {
@@ -156,7 +158,7 @@
       window.chunkList = chunkList
 
       const app = new Vue({
-        el: 'main',
+        el: '.app',
         data: {
           bits: Array.from({length: 120}, () => Number(Math.random() < 0.2)),
           url: '',
@@ -190,6 +192,8 @@
 
             const [file] = files
             if (!file) return
+
+            console.log('File Dropped.')
 
             const buffer = await file.arrayBuffer()
 
