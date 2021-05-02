@@ -25,19 +25,13 @@
               class="sprite"
               :class="{on: bit, off: !bit}"
               @click="toggleBit(groupIndex, at)"
-            >
-              {{Number(bit)}}
-            </div>
-          </div>
-
-          <div class="bits-text">
-            {{char}} = {{bits.join('')}} = {{parseInt(bits.join(''), 2)}}
+            ></div>
           </div>
         </div>
       </div>
 
       <a class="mode-switch" href="/">Single Character Mode</a>
-      <a class="mode-switch" href="/stacked">Stacked Drawing Mode</a>
+      <a class="mode-switch" href="/words">Multiple Character Mode</a>
     </main>
 
     <style scoped>
@@ -62,9 +56,8 @@
       .group-container {
         display: grid;
         grid-template-columns: 1fr 1fr 1fr;
-        grid-gap: 50px;
-
         padding: 0px 50px;
+        margin-bottom: 30px;
 
         align-items: center;
         justify-content: center;
