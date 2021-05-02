@@ -16,7 +16,7 @@
   <body>
     <div class="app">
       <main @drop.prevent="handleFileDrop" @dragover.prevent v-cloak>
-        <div class="container" :class="{eightMode: isEightMode}">
+        <div class="container" :class="{eightMode: isEightMode, hideNumber: isNumberHidden}">
           <div
             v-for="(bit, at) in bits"
             class="sprite"
@@ -63,6 +63,14 @@
         max-width: 100%;
         grid-template-columns: repeat(auto-fit, minmax(40px, 1fr));
         grid-gap: 0;
+      }
+
+      .container.hideNumber .sprite.on {
+        color: white;
+      }
+
+      .container.hideNumber .sprite.off {
+        color: black;
       }
 
       .container.eightMode {
@@ -183,7 +191,8 @@
           url: '',
 
           isEightMode: true,
-          isPanelHidden: false
+          isPanelHidden: false,
+          isNumberHidden: false
         },
         mounted() {
           this.loadBits()
@@ -193,6 +202,8 @@
             else if (e.key === '1') this.bits.push(1)
             else if (e.ctrlKey && e.key === 'h') this.isPanelHidden = !this.isPanelHidden
             else if (e.ctrlKey && e.key === 'e') this.isEightMode = !this.isEightMode
+            else if (e.ctrlKey && e.key === 'n') this.bits = []
+            else if (e.ctrlKey && e.key === 'i') this.isNumberHidden = !this.isNumberHidden
             else if (e.shiftKey && e.key === 'Backspace') this.popChar()
             else if (e.key === 'Backspace') this.bits.pop()
             else if (e.key === 'Enter') this.appendChar('\n')
