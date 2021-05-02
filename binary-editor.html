@@ -26,8 +26,12 @@
         </div>
       </div>
 
+      <div class="strings-panel">
+        {{strings}}
+      </div>
+
       <div class="export-panel">
-        <button @click="exportFile">Export File</button>
+        <button class="btn-export-file" @click="exportFile">Export File</button>
 
         <div class="download-url" v-if="url">URL = <a :href="url">Download File</a></divc>
       </div>
@@ -90,12 +94,29 @@
         color: rgba(255, 255, 255, 0.7);
       }
 
-      .export-panel {
+      .strings-panel, .export-panel {
         margin-top: 50px;
+      }
+
+      .strings-panel {
+        font-size: 19px;
       }
 
       .export-panel .download-url {
         margin-top: 10px;
+      }
+
+      .btn-export-file {
+        color: black;
+        background: white;
+        font-family: "JetBrains Mono", sans-serif;
+        border: 1px solid white;
+        padding: 5px 10px;
+      }
+
+      .btn-export-file:hover {
+        color: white;
+        background: black;
       }
     </style>
 
@@ -123,7 +144,24 @@
           bits: Array.from({length: 120}, () => Number(Math.random() < 0.2)),
           url: '',
         },
-        computed: {},
+        mounted() {
+          window.addEventListener('keydown', (e) => {
+            if (e.key === '0') return this.bits.push(0)
+            if (e.key === '1') return this.bits.push(1)
+            if (e.key === 'Backspace') return this.bits.pop()
+          })
+        },
+        computed: {
+          chunks() {
+            return chunkList(this.bits, 8).map((chunk) =>
+              parseInt(chunk.join(''), 2)
+            )
+          },
+
+          strings() {
+            return this.chunks.map(n => String.fromCharCode(n)).join('')
+          }
+        },
         methods: {
           async handleFileDrop(e) {
             const files = e.dataTransfer.files
@@ -156,15 +194,11 @@
           exportFile() {
             URL.revokeObjectURL(this.url)
 
-            const chunks = chunkList(this.bits, 8).map((chunk) =>
-              parseInt(chunk.join(''), 2)
-            )
-
-            const blob = new Blob([new Uint8Array(chunks)])
+            const blob = new Blob([new Uint8Array(this.chunks)])
             const url = window.URL.createObjectURL(blob)
 
             this.url = url
-          },
+          }
         },
       })
     </script>
