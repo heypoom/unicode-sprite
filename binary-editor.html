@@ -210,7 +210,8 @@
             else if (e.shiftKey && e.key === 'Backspace') this.popChar()
             else if (e.key === 'Backspace') this.bits.pop()
             else if (e.key === 'Enter') this.appendChar('\n')
-            else this.appendChar(e.key)
+            else if (e.key.length === 1) this.appendChar(e.key)
+            else return
 
             this.saveBits()
             this.scrollDown()
