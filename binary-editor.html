@@ -354,6 +354,7 @@
 
           async savePatternToPng() {
             await this.loadDomToImage()
+            URL.revokeObjectURL(this.url)
 
             const blob = await domtoimage.toBlob(document.querySelector('.container'))
             this.url = URL.createObjectURL(blob)
