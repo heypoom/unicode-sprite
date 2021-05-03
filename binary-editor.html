@@ -239,6 +239,12 @@
           .join("")
       }
 
+      function parsePng(arrayBuffer) {
+        const p = new png.PNG()
+
+        return new Promise((resolve) => p.parse(arrayBuffer, () => resolve(p)))
+      }
+
       const app = new Vue({
         el: ".app",
         data: {
@@ -251,6 +257,7 @@
 
           isOpenCVLoaded: false,
           isDOMToImageLoaded: false,
+          isPNGParserLoaded: false,
         },
         mounted() {
           this.loadBits()
@@ -302,8 +309,23 @@
             if (!file) return
 
             console.log("File Dropped.")
+            window.file = file
 
             const buffer = await file.arrayBuffer()
+
+            if (file.type === "image/png") {
+              await this.loadPNGParser()
+              console.log("PNG Parsed.")
+
+              const { data, width, height } = await parsePng(buffer)
+
+              window.pngData = data
+
+              const bits = await this.patternToBits([data, width, height])
+              this.bits = bits
+
+              return
+            }
 
             const hex = Array.from(new Uint8Array(buffer.slice(0, sizeLimits)))
             window.hex = hex
@@ -383,13 +405,24 @@
             this.isOpenCVLoaded = true
           },
 
+          async loadPNGParser() {
+            if (this.isPNGParserLoaded) return
+            const cdnUrl = "https://cdn.jsdelivr.net/npm/pngjs@6.0.0/browser.js"
+
+            await loadScript(cdnUrl)
+            console.log("Png Parser Loaded")
+
+            this.isPNGParserLoaded = true
+          },
+
           async loadDomToImage() {
             if (this.isDOMToImageLoaded) return
 
-            await loadScript(
+            const cdnUrl =
               "https://cdnjs.cloudflare.com/ajax/libs/dom-to-image/2.6.0/dom-to-image.min.js"
-            )
-            console.log("DOM TO Image Loaded")
+
+            await loadScript(cdnUrl)
+            console.log("DOM to Image Loaded")
 
             this.isDOMToImageLoaded = true
           },
@@ -398,9 +431,13 @@
             await this.loadDomToImage()
             URL.revokeObjectURL(this.url)
 
+            this.isEightMode = false
+            this.isNumberHidden = true
+
             const blob = await domtoimage.toBlob(
               document.querySelector(".container")
             )
+
             this.url = URL.createObjectURL(blob)
 
             console.log("Pattern saved:", this.url)
@@ -476,15 +513,9 @@
             return dst
           },
 
-          async patternToBits() {
+          async patternToBits([data, width, height]) {
             const tileSize = 40
             const bits = []
-
-            this.isEightMode = false
-            this.isPanelHidden = true
-            this.isNumberHidden = true
-
-            const [data, width, height] = await this.getPatternAsPixelData()
 
             const pixels = chunkList(data, 4)
             const tiles = chunkList(pixels, width)
