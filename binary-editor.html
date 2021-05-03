@@ -67,6 +67,8 @@
         max-width: 100%;
         grid-template-columns: repeat(auto-fit, minmax(40px, 1fr));
         grid-gap: 0;
+
+        background: black;
       }
 
       .container.hideNumber .sprite.on {
@@ -175,6 +177,27 @@
     <script>
       const sizeLimits = 4000
 
+      function loadScript(src) {
+        return new Promise((resolve, reject) => {
+          const s = document.createElement('script')
+          s.addEventListener('load', resolve)
+          s.setAttribute('src', src)
+          s.setAttribute('async', 'async')
+
+          document.body.appendChild(s)
+        })
+      }
+
+      function loadOpenCV() {
+        return new Promise(async (resolve, reject) => {
+          window.Module = {
+            onRuntimeInitialized: resolve
+          };
+
+          await loadScript("/libs/opencv.js")
+        })
+      }
+
       function chunkList(list, length) {
         const chunks = []
         let i = 0
@@ -196,7 +219,10 @@
 
           isEightMode: true,
           isPanelHidden: false,
-          isNumberHidden: false
+          isNumberHidden: false,
+
+          isOpenCVLoaded: false,
+          isDOMToImageLoaded: false
         },
         mounted() {
           this.loadBits()
@@ -206,6 +232,7 @@
             if (e.ctrlKey && e.key === 'h') return this.isNumberHidden = !this.isNumberHidden
             if (e.ctrlKey && e.key === 'e') return this.isEightMode = !this.isEightMode
             if (e.ctrlKey && e.key === 'p') return this.isPanelHidden = !this.isPanelHidden
+            if (e.ctrlKey && e.key === 's') return this.savePatternToPng()
 
             // Editor Controls
             if (e.key === '0') this.bits.push(0)
@@ -305,9 +332,38 @@
             setTimeout(() => {
               window.scrollTo(0, Number.MAX_SAFE_INTEGER)
             }, 50)
+          },
+
+          async loadOpenCV() {
+            if (this.isOpenCVLoaded) return
+
+            await loadOpenCV()
+            console.log(cv.getBuildInformation())
+
+            this.isOpenCVLoaded = true
+          },
+
+          async loadDomToImage() {
+            if (this.isDOMToImageLoaded) return
+
+            await loadScript("https://cdnjs.cloudflare.com/ajax/libs/dom-to-image/2.6.0/dom-to-image.min.js")
+            console.log('DOM TO Image Loaded')
+
+            this.isDOMToImageLoaded = true
+          },
+
+          async savePatternToPng() {
+            await this.loadDomToImage()
+
+            const blob = await domtoimage.toBlob(document.querySelector('.container'))
+            this.url = URL.createObjectURL(blob)
+
+            console.log('Pattern saved:', this.url)
           }
         },
       })
+
+      window.app = app
     </script>
   </body>
 </html>
