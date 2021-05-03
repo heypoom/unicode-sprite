@@ -53,7 +53,7 @@
             </div>
 
             <div class="image-download-url" v-if="imageUrl">
-              Image = <a :href="url">Download Image</a>
+              Image = <a :href="imageUrl">Download Image</a>
             </div>
           </div>
         </div>
@@ -444,10 +444,8 @@
             this.isEightMode = false
             this.isNumberHidden = true
 
-            const blob = await domtoimage.toBlob(
-              document.querySelector(".container")
-            )
-
+            const element = document.querySelector(".container")
+            const blob = await domtoimage.toBlob(element)
             this.imageUrl = URL.createObjectURL(blob)
 
             console.log("Pattern saved:", this.url)
