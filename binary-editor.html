@@ -228,7 +228,16 @@
         return chunks
       }
 
-      window.chunkList = chunkList
+      /** @param {number[]} bits*/
+      function bitsToAscii(bits) {
+        const chunks = chunkList(bits, 8)
+        console.log("Chunks", chunks)
+
+        return chunks
+          .map((chunk) => parseInt(chunk.join(""), 2))
+          .map((charCode) => String.fromCharCode(charCode))
+          .join("")
+      }
 
       const app = new Vue({
         el: ".app",
@@ -349,6 +358,7 @@
               .padStart(8, 0)
               .split("")
               .map(Number)
+
             console.log(`Append: ${char} = ${bits.join("")}`)
 
             this.bits.push(...bits)
@@ -396,17 +406,22 @@
             console.log("Pattern saved:", this.url)
           },
 
-          async getPatternAsImageData() {
+          async getPatternAsPixelData() {
             await this.loadDomToImage()
 
             const element = document.querySelector(".container")
-            const array = await domtoimage.toPixelData(element)
+            const pixels = await domtoimage.toPixelData(element)
 
-            return new ImageData(
-              array,
-              element.scrollWidth,
-              element.scrollHeight
-            )
+            // prettier-ignore
+            console.log(`W x H = ${element.scrollWidth} x ${element.scrollHeight}`)
+
+            return [pixels, element.scrollWidth, element.scrollHeight]
+          },
+
+          async getPatternAsImageData() {
+            const [pixels, width, height] = await this.getPatternAsPixelData()
+
+            return new ImageData(pixels, width, height)
           },
 
           async processPattern() {
@@ -453,12 +468,52 @@
               )
             }
 
-            // this.isPanelHidden = false
+            this.isPanelHidden = false
             // this.isNumberHidden = false
 
             cv.imshow("preview-canvas", dst)
 
             return dst
+          },
+
+          async patternToBits() {
+            const tileSize = 40
+            const bits = []
+
+            this.isEightMode = false
+            this.isPanelHidden = true
+            this.isNumberHidden = true
+
+            const [data, width, height] = await this.getPatternAsPixelData()
+
+            const pixels = chunkList(data, 4)
+            const tiles = chunkList(pixels, width)
+
+            let x = 0
+            let y = 0
+
+            while (y < height) {
+              x = 0
+
+              while (x < width) {
+                let color = tiles[y][x]
+                if (!color) continue
+
+                const [red, green, blue, alpha] = color
+
+                if (red === 255) bits.push(1)
+                else if (red === 0) bits.push(0)
+                else return []
+
+                x += tileSize + 1
+              }
+
+              y += tileSize + 1
+            }
+
+            console.log(`Bits:`, { bits, ascii: bitsToAscii(bits) })
+
+            return bits
           },
         },
       })
