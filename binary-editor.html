@@ -39,6 +39,10 @@
                 Export File
               </button>
 
+              <button class="btn-export-file" @click="savePatternToPng">
+                Save Image
+              </button>
+
               <button class="btn-export-file" @click="processPattern">
                 Find Contour
               </button>
@@ -46,6 +50,10 @@
 
             <div class="download-url" v-if="url">
               URL = <a :href="url">Download File</a>
+            </div>
+
+            <div class="image-download-url" v-if="imageUrl">
+              Image = <a :href="url">Download Image</a>
             </div>
           </div>
         </div>
@@ -250,6 +258,7 @@
         data: {
           bits: Array.from({ length: 120 }, () => Number(Math.random() < 0.2)),
           url: "",
+          imageUrl: "",
 
           isEightMode: true,
           isPanelHidden: false,
@@ -429,7 +438,8 @@
 
           async savePatternToPng() {
             await this.loadDomToImage()
-            URL.revokeObjectURL(this.url)
+
+            URL.revokeObjectURL(this.imageUrl)
 
             this.isEightMode = false
             this.isNumberHidden = true
@@ -438,7 +448,7 @@
               document.querySelector(".container")
             )
 
-            this.url = URL.createObjectURL(blob)
+            this.imageUrl = URL.createObjectURL(blob)
 
             console.log("Pattern saved:", this.url)
           },
