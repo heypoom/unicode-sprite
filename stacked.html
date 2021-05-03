@@ -14,7 +14,7 @@
     />
   </head>
   <body>
-    <main>
+    <main v-cloak>
       <input class="words" v-model="message" maxlength="10000" />
 
       <div class="group-container">
@@ -37,7 +37,11 @@
     <style scoped>
       body {
         margin: 0;
-        font-family: 'JetBrains Mono', sans-serif;
+        font-family: "JetBrains Mono", sans-serif;
+      }
+
+      [v-cloak] {
+        display: none !important;
       }
 
       main {
@@ -129,18 +133,18 @@
 
     <script>
       const app = new Vue({
-        el: 'main',
+        el: "main",
         data: {
-          message: 'สวัสดีวันจันทร์ เยอรมันอากาศดี',
+          message: "สวัสดีวันจันทร์ เยอรมันอากาศดี",
         },
         computed: {
           bitgroups() {
-            return this.message.split('').map((char) => {
+            return this.message.split("").map((char) => {
               const bits = char
                 .charCodeAt(0)
                 .toString(2)
-                .padStart(16, '0')
-                .split('')
+                .padStart(16, "0")
+                .split("")
                 .map((n) => Number(n) || 0)
 
               return [char, bits]
@@ -161,8 +165,8 @@
             bitgroups[groupIndex] = group
 
             this.message = bitgroups
-              .map((bits) => String.fromCharCode(parseInt(bits.join(''), 2)))
-              .join('')
+              .map((bits) => String.fromCharCode(parseInt(bits.join(""), 2)))
+              .join("")
           },
         },
       })

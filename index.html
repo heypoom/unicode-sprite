@@ -14,7 +14,7 @@
     />
   </head>
   <body>
-    <main>
+    <main v-cloak>
       <input class="character" v-model="message" maxlength="3" />
 
       <div class="container">
@@ -37,7 +37,11 @@
     <style scoped>
       body {
         margin: 0;
-        font-family: 'JetBrains Mono', sans-serif;
+        font-family: "JetBrains Mono", sans-serif;
+      }
+
+      [v-cloak] {
+        display: none !important;
       }
 
       main {
@@ -110,22 +114,22 @@
 
     <script>
       const app = new Vue({
-        el: 'main',
+        el: "main",
         data: {
-          message: 'a',
+          message: "a",
         },
         computed: {
           bits() {
             return this.message
               .charCodeAt(0)
               .toString(2)
-              .padStart(16, '0')
-              .split('')
+              .padStart(16, "0")
+              .split("")
               .map((n) => Number(n) || 0)
           },
 
           bitstring() {
-            return this.bits.join('')
+            return this.bits.join("")
           },
         },
         methods: {
@@ -134,7 +138,7 @@
             const bits = [...this.bits]
             bits[bit] = Number(!bits[bit])
 
-            this.message = String.fromCharCode(parseInt(bits.join(''), 2))
+            this.message = String.fromCharCode(parseInt(bits.join(""), 2))
           },
         },
       })
