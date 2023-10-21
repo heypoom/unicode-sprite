@@ -28,10 +28,14 @@
         </div>
       </div>
 
-      <div class="bits-text">{{bitstring}} = {{parseInt(bitstring, 2)}}</div>
+      <div class="bits-text">{{bitstring}} = {{parseInt(bitstring, 2)}} {{htmlEntity}}</div>
 
       <a class="mode-switch" href="/words">Multiple Characters Mode</a>
       <a class="mode-switch" href="/stacked">Stacked Drawing Mode</a>
+      <span class="mode-switch">
+        <input type="checkbox" v-model="module.withHtmlEntity" name="with-html-entity" />
+        <label for="with-html-entity">With HTML Entity</label>
+      </span>
     </main>
 
     <style scoped>
@@ -117,6 +121,7 @@
         el: "main",
         data: {
           message: "a",
+          withHtmlEntity: false
         },
         computed: {
           bits() {
@@ -131,6 +136,10 @@
           bitstring() {
             return this.bits.join("")
           },
+
+          htmlEntity() {
+            return this.withHtmlEntity ? ` &#x{this.message.charCodeAt(0).toString('hex')}` : ''
+          }
         },
         methods: {
           /** @param {number} bit */
