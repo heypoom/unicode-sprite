@@ -33,7 +33,7 @@
       <a class="mode-switch" href="/words">Multiple Characters Mode</a>
       <a class="mode-switch" href="/stacked">Stacked Drawing Mode</a>
       <span class="mode-switch">
-        <input type="checkbox" v-model="module.withHtmlEntity" name="with-html-entity" />
+        <input type="checkbox" v-model="withHtmlEntity" id="with-html-entity" />
         <label for="with-html-entity">With HTML Entity</label>
       </span>
     </main>
@@ -138,7 +138,9 @@
           },
 
           htmlEntity() {
-            return this.withHtmlEntity ? ` &#x{this.message.charCodeAt(0).toString('hex')}` : ''
+            return this.withHtmlEntity
+				? ` = &#x${this.message.charCodeAt(0).toString('16')};`
+				: ''
           }
         },
         methods: {
